@@ -1,0 +1,48 @@
+#desafio data science covid 19
+
+import pandas as pd
+
+import matplotlib.pyplot as plt
+
+
+url = 'https://raw.githubusercontent.com/wcota/covid19br/master/cases-brazil-cities.csv'
+data = pd.read_csv(url)
+city_most_cases = data.loc[data['totalCases'].idxmax(), 'city']
+
+city_least_cases = data.loc[data['totalCases'].mask(data['totalCases'] == 0).idxmin(), 'city']
+
+state_most_cases = data.groupby('state')['totalCases'].sum().idxmax()
+
+state_least_cases = data.groupby('state')['totalCases'].sum().mask(data.groupby('state')['totalCases'].sum() == 0).idxmin()
+
+city_most_deaths = data.loc[data['deaths'].idxmax(), 'city']
+
+city_least_deaths = data.loc[data['deaths'].mask(data['deaths'] == 0).idxmin(), 'city']
+
+state_most_deaths = data.groupby('state')['deaths'].sum().idxmax()
+
+state_least_deaths = data.groupby('state')['deaths'].sum().mask(data.groupby('state')['deaths'].sum() == 0).idxmin()
+
+total_cases_brazil = data['totalCases'].sum()
+
+total_deaths_brazil = data['deaths'].sum()
+
+
+top_5_states_deaths = data.groupby('state')['deaths'].sum().sort_values(ascending=False).head(5)
+
+plt.figure(figsize=(10, 6))
+plt.bar(top_5_states_deaths.index, top_5_states_deaths.values)
+plt.xlabel('State')
+plt.ylabel('Number of Deaths')
+plt.title('Top 5 States with Most COVID-19 Deaths')
+plt.xticks(rotation=45, ha='right')
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(10, 6))
+plt.hist(data['totalCases'], bins=20)
+plt.xlabel('Total Cases')
+plt.ylabel('Frequency')
+plt.title('Distribution of Total COVID-19 Cases')
+plt.tight_layout()
+plt.show()
